@@ -89,6 +89,63 @@ Nodo* search_return_node_tree(Nodo *arbol, double ptemperatura){
     }
 }
 
+
+Nodo* find_smallest(Nodo *arbol){
+    if(arbol->izq){
+        return find_smallest(arbol->izq); 
+    }
+    return arbol; 
+}
+
+
+bool delete_node(Nodo *arbol, double ptemperatura){
+    Nodo *nodoEvaluado = new Nodo(); 
+    Nodo *aux = new Nodo(); 
+    nodoEvaluado = search_return_node_tree(arbol,  ptemperatura); 
+    if(nodoEvaluado == NULL){
+        return false; 
+    }else{
+        if(nodoEvaluado->der ==NULL && nodoEvaluado->izq ==NULL){
+            aux = nodoEvaluado; 
+            nodoEvaluado = NULL; 
+            free(aux); 
+        }else if(nodoEvaluado->der == NULL && nodoEvaluado->izq != NULL){
+            aux = nodoEvaluado -> izq; 
+            nodoEvaluado->humedad = aux ->humedad; 
+            nodoEvaluado->temperatura = aux ->temperatura; 
+            nodoEvaluado->presion = aux ->presion; 
+            nodoEvaluado->tipoPieza = aux -> tipoPieza; 
+
+            nodoEvaluado ->der = aux ->der;  
+            nodoEvaluado ->izq = aux ->izq;  
+            free(aux); 
+
+        }else if(nodoEvaluado->der != NULL && nodoEvaluado->izq == NULL){
+            aux = nodoEvaluado -> der; 
+            nodoEvaluado->humedad = aux ->humedad; 
+            nodoEvaluado->temperatura = aux ->temperatura; 
+            nodoEvaluado->presion = aux ->presion; 
+            nodoEvaluado->tipoPieza = aux -> tipoPieza; 
+
+            nodoEvaluado ->der = aux ->der;  
+            nodoEvaluado ->izq = aux ->izq;  
+            free(aux); 
+        }else{
+            aux = find_smallest(nodoEvaluado->der); 
+            nodoEvaluado->humedad = aux ->humedad; 
+            nodoEvaluado->temperatura = aux ->temperatura; 
+            nodoEvaluado->presion = aux ->presion; 
+            nodoEvaluado->tipoPieza = aux -> tipoPieza; 
+            
+            Nodo *aux2 = new Nodo(); 
+            aux2 = aux->der; 
+            aux = aux2; 
+            free(aux2); 
+        }
+        return true; 
+    }
+}
+
 void menuCocido(){
     int opcion; 
     char tipoPieza;
@@ -138,23 +195,35 @@ void menuCocido(){
             {
                 cout << "\n Ingresa la temperatura de la pieza para buscarla:: \n";
                 cin >> temperatura;
-                    Nodo *nodoBuscado= new Nodo(); 
-                    nodoBuscado= search_return_node_tree(arbol, temperatura); 
+                Nodo *nodoBuscado= new Nodo(); 
+                nodoBuscado= search_return_node_tree(arbol, temperatura); 
 
                 cout << "\n Buscando pieza.... \n";
         
-                        if (nodoBuscado == NULL) {
-                            cout << "\n No se encontró la pieza.\n";
-                        }
-                        else {
-                            cout <<"La pieza encontrada tiene los siguientes datos: "<<endl; 
-                            cout <<"-Temperatura:: " <<nodoBuscado->temperatura <<endl;
-                            cout <<"-Presión:: " <<nodoBuscado->presion <<endl;
-                            cout <<"-Humedad:: " <<nodoBuscado->humedad <<endl;
-                            cout <<"-Tipo de pieza:: " <<nodoBuscado->tipoPieza <<endl;
-                        }
+                if (nodoBuscado == NULL) {
+                    cout << "\n No se encontró la pieza.\n";
+                }
+                else {
+                    cout <<"La pieza encontrada tiene los siguientes datos: "<<endl; 
+                    cout <<"-Temperatura:: " <<nodoBuscado->temperatura <<endl;
+                    cout <<"-Presión:: " <<nodoBuscado->presion <<endl;
+                    cout <<"-Humedad:: " <<nodoBuscado->humedad <<endl;
+                    cout <<"-Tipo de pieza:: " <<nodoBuscado->tipoPieza <<endl;
+                }
                 break;
             }
+            case 4:
+            {
+                cout << "\n Ingrese la temperatura de la pieza a eliminar::\n";
+                cin >> temperatura ;
+                if (delete_node(arbol, temperatura)) {
+                    cout << "\n La pieza fue eliminada exitosamente.\n";
+                }else {
+                    cout << "\n La pieza NO fue eliminada.\n";
+                }
+                break;
+            }
+
             default:
             {
             break;
