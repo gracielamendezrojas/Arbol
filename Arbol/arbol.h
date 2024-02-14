@@ -64,18 +64,6 @@ void mostrarArbol(Nodo *arbol, int cont){
     }
 }
 
-bool search_node_tree(Nodo *arbol, double ptemperatura){
-    if(arbol == NULL){
-        return false;
-    }else if(arbol -> temperatura == ptemperatura){
-        return true;
-    }else if (ptemperatura < arbol -> temperatura ){
-        return search_node_tree(arbol -> izq, ptemperatura);
-    }else{
-        return search_node_tree(arbol -> der, ptemperatura);
-    }
-}
-
 
 bool search_node_tree(Nodo *arbol, double ptemperatura){
     if(arbol == NULL){
@@ -88,7 +76,19 @@ bool search_node_tree(Nodo *arbol, double ptemperatura){
         return search_node_tree(arbol -> der, ptemperatura);
     }
 }
-/***/
+
+Nodo* search_return_node_tree(Nodo *arbol, double ptemperatura){
+    if(arbol == NULL){
+        return NULL;
+    }else if(arbol -> temperatura == ptemperatura){
+        return arbol;
+    }else if (ptemperatura < arbol -> temperatura ){
+        return search_return_node_tree(arbol -> izq, ptemperatura);
+    }else{
+        return search_return_node_tree(arbol -> der, ptemperatura);
+    }
+}
+
 void menuCocido(){
     int opcion; 
     char tipoPieza;
@@ -108,6 +108,7 @@ void menuCocido(){
 
         switch (opcion) {
             case 1:
+            {
                 cout << "\n Ingrese la temperatura de la pieza::\n";
                 cin >> temperatura ;
 
@@ -123,29 +124,41 @@ void menuCocido(){
                 insert_Node(arbol, temperatura,humedad, presion, tipoPieza);
                 system("pause");
                 break;
-
+            }
             case 2:
+            {
                 cout << "\n";
                 cout << "\n Mostrando el árbol completo\n";
                 cout << "\n";
                 mostrarArbol(arbol, contador);
                 system("pause");
                 break; 
-                        
+            }  
             case 3:
-                cout << "\n Ingresa la temperatura de la pieza para buscarla";
+            {
+                cout << "\n Ingresa la temperatura de la pieza para buscarla:: \n";
                 cin >> temperatura;
+                    Nodo *nodoBuscado= new Nodo(); 
+                    nodoBuscado= search_return_node_tree(arbol, temperatura); 
 
-                cout << "\n Buscando pieza \n";
-                        if (search_node_tree(arbol, temperatura) == true) {
-                            cout << "\n Se encontró la pieza.\n";
-                        }
-                        else {
+                cout << "\n Buscando pieza.... \n";
+        
+                        if (nodoBuscado == NULL) {
                             cout << "\n No se encontró la pieza.\n";
                         }
+                        else {
+                            cout <<"La pieza encontrada tiene los siguientes datos: "<<endl; 
+                            cout <<"-Temperatura:: " <<nodoBuscado->temperatura <<endl;
+                            cout <<"-Presión:: " <<nodoBuscado->presion <<endl;
+                            cout <<"-Humedad:: " <<nodoBuscado->humedad <<endl;
+                            cout <<"-Tipo de pieza:: " <<nodoBuscado->tipoPieza <<endl;
+                        }
                 break;
+            }
             default:
-                break;
+            {
+            break;
+            }
         }    
     }while(opcion != 6); 
 }
@@ -197,7 +210,7 @@ void menuImpregnado(){
                 cout << "\n Ingresa la temperatura de la pieza para buscarla::\n";
                 cin >> temperatura;
 
-                cout << "\n Buscando pieza \n";
+                cout << "\n Buscando pieza... \n";
                         if (search_node_tree(arbol, temperatura) == true) {
                             cout << "\n Se encontró la pieza. \n";
                         }
