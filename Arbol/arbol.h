@@ -31,13 +31,11 @@ Nodo *CreateNode(double temperatura, double humedad, double presion, char tipoPi
     return nuevo;
 }
 
-Nodo *arbol=NULL;
 
-void insert_Node(Nodo *&arbol, double temperatura, double humedad, double presion, char tipoPieza){
+void insert_Node(Nodo*& arbol, double temperatura, double humedad, double presion, char tipoPieza){
     double raiz;
-    if(arbol==NULL){
-        Nodo *nuevo=CreateNode(temperatura,humedad,presion,tipoPieza);
-        arbol=nuevo;
+    if(arbol==nullptr){
+        arbol=CreateNode(temperatura,humedad,presion,tipoPieza);
     }else{
         raiz=arbol->temperatura;
         if(temperatura< raiz){
@@ -78,8 +76,8 @@ bool search_node_tree(Nodo *arbol, double ptemperatura){
 }
 
 Nodo* search_return_node_tree(Nodo *arbol, double ptemperatura){
-    if(arbol == NULL){
-        return NULL;
+    if(arbol == nullptr){
+        return nullptr;
     }else if(arbol -> temperatura == ptemperatura){
         return arbol;
     }else if (ptemperatura < arbol -> temperatura ){
@@ -90,7 +88,7 @@ Nodo* search_return_node_tree(Nodo *arbol, double ptemperatura){
 }
 
 
-Nodo* find_smallest(Nodo *arbol){
+Nodo* find_smallest(Nodo* arbol){
     if(arbol->izq){
         return find_smallest(arbol->izq); 
     }
@@ -98,52 +96,34 @@ Nodo* find_smallest(Nodo *arbol){
 }
 
 
-bool delete_node(Nodo *arbol, double ptemperatura){
-    Nodo *nodoEvaluado = new Nodo(); 
-    Nodo *aux = new Nodo(); 
-    nodoEvaluado = search_return_node_tree(arbol,  ptemperatura); 
-    if(nodoEvaluado == NULL){
-        return false; 
-    }else{
-        if(nodoEvaluado->der ==NULL && nodoEvaluado->izq ==NULL){
-            aux = nodoEvaluado; 
-            nodoEvaluado = NULL; 
-            free(aux); 
-        }else if(nodoEvaluado->der == NULL && nodoEvaluado->izq != NULL){
-            aux = nodoEvaluado -> izq; 
-            nodoEvaluado->humedad = aux ->humedad; 
-            nodoEvaluado->temperatura = aux ->temperatura; 
-            nodoEvaluado->presion = aux ->presion; 
-            nodoEvaluado->tipoPieza = aux -> tipoPieza; 
-
-            nodoEvaluado ->der = aux ->der;  
-            nodoEvaluado ->izq = aux ->izq;  
-            free(aux); 
-
-        }else if(nodoEvaluado->der != NULL && nodoEvaluado->izq == NULL){
-            aux = nodoEvaluado -> der; 
-            nodoEvaluado->humedad = aux ->humedad; 
-            nodoEvaluado->temperatura = aux ->temperatura; 
-            nodoEvaluado->presion = aux ->presion; 
-            nodoEvaluado->tipoPieza = aux -> tipoPieza; 
-
-            nodoEvaluado ->der = aux ->der;  
-            nodoEvaluado ->izq = aux ->izq;  
-            free(aux); 
-        }else{
-            aux = find_smallest(nodoEvaluado->der); 
-            nodoEvaluado->humedad = aux ->humedad; 
-            nodoEvaluado->temperatura = aux ->temperatura; 
-            nodoEvaluado->presion = aux ->presion; 
-            nodoEvaluado->tipoPieza = aux -> tipoPieza; 
-            
-            Nodo *aux2 = new Nodo(); 
-            aux2 = aux->der; 
-            aux = aux2; 
-            free(aux2); 
-        }
-        return true; 
+Nodo* delete_node(Nodo*& arbol, double temperatura){
+    if (arbol == nullptr) {
+        return arbol;
     }
+    if (temperatura < arbol->temperatura) {
+        arbol->izq = delete_node(arbol->izq, temperatura);
+    }
+    else if (temperatura > arbol->temperatura) {
+        arbol->der = delete_node(arbol->der, temperatura);
+    }
+    else {
+        if (arbol->izq == nullptr) {
+            Nodo* aux = arbol->der;
+            free(arbol);
+            return aux;
+        } else if (arbol->der == nullptr) {
+            Nodo* aux = arbol->izq;
+            free(arbol);
+            return aux;
+        }
+        Nodo* aux = find_smallest(arbol->der);
+        arbol->temperatura = aux->temperatura;
+        arbol->humedad = aux->humedad;
+        arbol->presion = aux->presion;
+        arbol->tipoPieza = aux->tipoPieza;
+        arbol->der = delete_node(arbol->der, aux->temperatura);
+    }
+    return arbol;
 }
 
 void menuCocido(){
@@ -151,6 +131,7 @@ void menuCocido(){
     char tipoPieza;
     double temperatura, humedad, presion;
     int contador=0;
+    Nodo *raizCocido=nullptr;
     do{
 
         cout << "\n Opciones del proceso cocido\n";
@@ -178,16 +159,17 @@ void menuCocido(){
                 cout << "\n Ingrese el tipo pieza::\n";
                 cin >> tipoPieza ;
 
-                insert_Node(arbol, temperatura,humedad, presion, tipoPieza);
+                insert_Node(raizCocido, temperatura,humedad, presion, tipoPieza);
                 system("pause");
                 break;
             }
             case 2:
             {
                 cout << "\n";
-                cout << "\n Mostrando el árbol completo\n";
+                cout << "\n Así se ve el árbol actualmente ...\n";
                 cout << "\n";
-                mostrarArbol(arbol, contador);
+                mostrarArbol(raizCocido, contador);
+                cout << "\n";
                 system("pause");
                 break; 
             }  
@@ -196,7 +178,7 @@ void menuCocido(){
                 cout << "\n Ingresa la temperatura de la pieza para buscarla:: \n";
                 cin >> temperatura;
                 Nodo *nodoBuscado= new Nodo(); 
-                nodoBuscado= search_return_node_tree(arbol, temperatura); 
+                nodoBuscado= search_return_node_tree(raizCocido, temperatura); 
 
                 cout << "\n Buscando pieza.... \n";
         
@@ -216,11 +198,13 @@ void menuCocido(){
             {
                 cout << "\n Ingrese la temperatura de la pieza a eliminar::\n";
                 cin >> temperatura ;
-                if (delete_node(arbol, temperatura)) {
-                    cout << "\n La pieza fue eliminada exitosamente.\n";
-                }else {
-                    cout << "\n La pieza NO fue eliminada.\n";
-                }
+                raizCocido = delete_node(raizCocido, temperatura);
+                
+                cout << "\n Así se ve el árbol actualmente...\n" << endl;
+                cout << "\n";
+                mostrarArbol(raizCocido, contador);
+                cout << "\n";
+                system("pause");
                 break;
             }
 
@@ -233,64 +217,7 @@ void menuCocido(){
 }
 
 void menuImpregnado(){
-    int opcion; 
-    char tipoPieza;
-    double temperatura, humedad, presion;
-    int contador=0;
-    do{
-
-        cout << "\n Opciones del proceso cocido\n";
-        cout << "1. Insertar pieza\n";
-        cout << "2. Mostrar el árbol\n";
-        cout << "3. Buscar pieza por temperatura\n";
-        cout << "4. Eliminar pieza por temperatura\n";
-        cout << "5. Conteo de piezas\n";
-        cout << "6. Salir\n";
-        cout << "Digite la opción::\n";
-        cin >> opcion;
-
-        switch (opcion) {
-            case 1:
-                cout << "\n Ingrese la temperatura de la pieza::\n";
-                cin >> temperatura ;
-
-                cout << "\n Ingrese la humedad de la pieza::\n";
-                cin >> humedad ;
-
-                cout << "\n Ingrese la presión de la pieza::\n";
-                cin >> presion ;
-
-                cout << "\n Ingrese el tipo pieza::\n";
-                cin >> tipoPieza ;
-
-                insert_Node(arbol, temperatura,humedad, presion, tipoPieza);
-                system("pause");
-                break;
-
-            case 2:
-                cout << "\n";
-                cout << "\n Mostrando el árbol completo\n";
-                cout << "\n";
-                mostrarArbol(arbol, contador);
-                system("pause");
-                break; 
-                        
-            case 3:
-                cout << "\n Ingresa la temperatura de la pieza para buscarla::\n";
-                cin >> temperatura;
-
-                cout << "\n Buscando pieza... \n";
-                        if (search_node_tree(arbol, temperatura) == true) {
-                            cout << "\n Se encontró la pieza. \n";
-                        }
-                        else {
-                            cout << "\n No se encontró la pieza. \n";
-                        }
-                break;
-            default:
-                break;
-        }    
-    }while(opcion != 6); 
+    
 }
 
 void Menu() {
