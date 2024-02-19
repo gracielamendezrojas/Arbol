@@ -7,6 +7,10 @@
 
 using namespace std; 
 
+//***************************//
+//********ARBOL COCIDO*******//
+//***************************//
+
 struct Nodo{
 
     double temperatura;
@@ -126,6 +130,127 @@ Nodo* delete_node(Nodo*& arbol, double temperatura){
     return arbol;
 }
 
+//*******************************//
+//********ARBOL IMPREGNADO*******//
+//*******************************//
+
+struct NodoImpregnado {
+    double resistencia;
+    double voltaje;
+    double campoMagnetico;
+    char tipoSensor;
+    NodoImpregnado *der;
+    NodoImpregnado *izq;
+};
+
+NodoImpregnado *CreateNodeImpregnado(double resistencia, double voltaje, double campoMagnetico, char tipoSensor){
+
+    NodoImpregnado *nuevo=new NodoImpregnado();
+    nuevo->resistencia = resistencia;
+    nuevo->voltaje = voltaje;
+    nuevo->campoMagnetico = campoMagnetico;
+    nuevo->tipoSensor = tipoSensor;
+    nuevo->der=NULL;
+    nuevo->izq=NULL;
+
+    return nuevo;
+}
+
+void insert_NodeImpregnado(NodoImpregnado*& arbol, double resistencia, double voltaje, double campoMagnetico, char tipoSensor){
+    double raiz;
+    if(arbol==nullptr){
+        arbol=CreateNodeImpregnado(resistencia,voltaje,campoMagnetico,tipoSensor);
+    }else{
+        raiz=arbol->resistencia;
+        if(resistencia< raiz){
+            /* menor a la izquierda*/
+            insert_NodeImpregnado(arbol->izq, resistencia, voltaje,  campoMagnetico, tipoSensor);
+        }else{
+            /* mayor a la derecha*/
+            insert_NodeImpregnado(arbol->der,resistencia, voltaje,  campoMagnetico, tipoSensor);
+        }
+    }
+}
+
+void mostrarArbolImpregnado(NodoImpregnado *arbol, int cont){
+    if(arbol==NULL){
+        return;
+    }else{
+        mostrarArbolImpregnado(arbol->der, cont+1);
+        for(int i=0; i< cont; i++){
+                cout<<"  ";       
+        }
+        cout<< arbol-> resistencia <<endl; 
+
+        mostrarArbolImpregnado(arbol->izq, cont+1);
+    }
+}
+
+bool search_node_treeImpregnado(NodoImpregnado *arbol, double presistencia){
+    if(arbol == NULL){
+        return false;
+    }else if(arbol -> resistencia == presistencia){
+        return true;
+    }else if (presistencia < arbol -> resistencia ){
+        return search_node_treeImpregnado(arbol -> izq, presistencia);
+    }else{
+        return search_node_treeImpregnado(arbol -> der, presistencia);
+    }
+}
+
+NodoImpregnado* search_return_node_treeImpregnado(NodoImpregnado *arbol, double presistencia){
+    if(arbol == nullptr){
+        return nullptr;
+    }else if(arbol -> resistencia == presistencia){
+        return arbol;
+    }else if (presistencia < arbol -> resistencia ){
+        return search_return_node_treeImpregnado(arbol -> izq, presistencia);
+    }else{
+        return search_return_node_treeImpregnado(arbol -> der, presistencia);
+    }
+}
+
+NodoImpregnado* find_smallestImpregnado(NodoImpregnado* arbol){
+    if(arbol->izq){
+        return find_smallestImpregnado(arbol->izq); 
+    }
+    return arbol; 
+}
+
+NodoImpregnado* delete_nodeImpregnado(NodoImpregnado*& arbol, double resistencia){
+    if (arbol == nullptr) {
+        return arbol;
+    }
+    if (resistencia < arbol->resistencia) {
+        arbol->izq = delete_nodeImpregnado(arbol->izq, resistencia);
+    }
+    else if (resistencia > arbol->resistencia) {
+        arbol->der = delete_nodeImpregnado(arbol->der, resistencia);
+    }
+    else {
+        if (arbol->izq == nullptr) {
+            NodoImpregnado* aux = arbol->der;
+            free(arbol);
+            return aux;
+        } else if (arbol->der == nullptr) {
+            NodoImpregnado* aux = arbol->izq;
+            free(arbol);
+            return aux;
+        }
+        NodoImpregnado* aux = find_smallestImpregnado(arbol->der);
+        arbol->resistencia = aux->resistencia;
+        arbol->voltaje = aux->voltaje;
+        arbol->campoMagnetico = aux->campoMagnetico;
+        arbol->tipoSensor = aux->tipoSensor;
+        arbol->der = delete_nodeImpregnado(arbol->der, aux->resistencia);
+    }
+    return arbol;
+}
+
+//********************//
+//*******MENUS********//
+//********************// 
+
 void menuCocido(){
     int opcion; 
     char tipoPieza;
@@ -217,8 +342,94 @@ void menuCocido(){
 }
 
 void menuImpregnado(){
-    
-}
+    int opcion; 
+    char tipoSensor;
+    double resistencia, voltaje, campoMagnetico;
+    int contador=0;
+    NodoImpregnado *raizImpregnado=nullptr;
+    do{
+
+        cout << "\n Opciones del proceso cocido\n";
+        cout << "1. Insertar pieza\n";
+        cout << "2. Mostrar el árbol\n";
+        cout << "3. Buscar pieza por resistencia\n";
+        cout << "4. Eliminar pieza por resistencia\n";
+        cout << "5. Conteo de piezas\n";
+        cout << "6. Salir\n";
+        cout << "Digite la opción::\n";
+        cin >> opcion;
+
+        switch (opcion) {
+            case 1:
+            {
+                cout << "\n Ingrese la resistencia de la pieza::\n";
+                cin >> resistencia ;
+
+                cout << "\n Ingrese el voltaje de la pieza::\n";
+                cin >> voltaje ;
+
+                cout << "\n Ingrese el campo magnetico de la pieza::\n";
+                cin >> campoMagnetico ;
+
+                cout << "\n Ingrese el tipo de sensor::\n";
+                cin >> tipoSensor ;
+
+                insert_NodeImpregnado(raizImpregnado, resistencia, voltaje, campoMagnetico, tipoSensor);
+                system("pause");
+                break;
+            }
+            case 2:
+            {
+                cout << "\n";
+                cout << "\n Así se ve el árbol actualmente ...\n";
+                cout << "\n";
+                mostrarArbolImpregnado(raizImpregnado, contador);
+                cout << "\n";
+                system("pause");
+                break; 
+            }  
+            case 3:
+            {
+                cout << "\n Ingresa la resistencia de la pieza para buscarla:: \n";
+                cin >> resistencia;
+                NodoImpregnado *nodoImpregnadoBuscado= new NodoImpregnado(); 
+                nodoImpregnadoBuscado= search_return_node_treeImpregnado(raizImpregnado, resistencia); 
+
+                cout << "\n Buscando pieza.... \n";
+        
+                if (nodoImpregnadoBuscado == NULL) {
+                    cout << "\n No se encontró la pieza.\n";
+                }
+                else {
+                    cout <<"La pieza encontrada tiene los siguientes datos: "<<endl; 
+                    cout <<"-Resistencia:: " <<nodoImpregnadoBuscado->resistencia <<endl;
+                    cout <<"-Voltaje:: " <<nodoImpregnadoBuscado->voltaje <<endl;
+                    cout <<"-Campo magnetico:: " <<nodoImpregnadoBuscado->campoMagnetico <<endl;
+                    cout <<"-Tipo de sensor:: " <<nodoImpregnadoBuscado->tipoSensor <<endl;
+                }
+                break;
+            }
+            case 4:
+            {
+                cout << "\n Ingrese la resistencia de la pieza a eliminar::\n";
+                cin >> resistencia ;
+                raizImpregnado = delete_nodeImpregnado(raizImpregnado, resistencia);
+                
+                cout << "\n Así se ve el árbol actualmente...\n" << endl;
+                cout << "\n";
+                mostrarArbolImpregnado(raizImpregnado, contador);
+                cout << "\n";
+                system("pause");
+                break;
+            }
+
+            default:
+            {
+            break;
+            }
+        }    
+    }while(opcion != 6); 
+}   
 
 void Menu() {
 
