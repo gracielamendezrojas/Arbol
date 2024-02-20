@@ -363,13 +363,13 @@ void menuCocido(){
         }
     }while(opcion != 6);
 }
+    NodoImpregnado *raizImpregnado=nullptr;
 
 void menuImpregnado(){
     int opcion;
     char tipoSensor;
     double resistencia, voltaje, campoMagnetico;
     int contador=0;
-    NodoImpregnado *raizImpregnado=nullptr;
     do{
 
         cout << "\n Opciones del proceso cocido\n";
@@ -460,30 +460,32 @@ void menuImpregnado(){
 }
 
 void Menu() {
-
     int opcionInicial;
 
-    do{
-        cout << "¿Qué proceso desea realizar?:" <<endl;
-        cout << "1. cocido" <<endl;
-        cout << "2. impregnado" <<endl;
-        cout << "Digite una opción: " <<endl;
+    do {
+        cout << "¿Qué proceso desea realizar?:" << endl;
+        cout << "1. cocido" << endl;
+        cout << "2. impregnado" << endl;
+        cout << "3. Mostrar total de piezas en ambos procesos" << endl;
+        cout << "Digite una opción: " << endl;
         cin >> opcionInicial;
-        switch (opcionInicial)
-        {
-            case 1:
-            {
+
+        switch (opcionInicial) {
+            case 1: {
                 menuCocido();
                 break;
             }
-            case 2 :
-            {
+            case 2: {
                 menuImpregnado();
                 break;
             }
-
+            case 3: {
+                int totalPiezas = contarPiezas(raizCocido) + contarPiezasImpregnado(raizImpregnado);
+                cout << "Total de piezas en ambos procesos: " << totalPiezas << endl;
+                break;
+            }
         }
-    }while(opcionInicial != 6);
+    } while (opcionInicial != 6);
 }
 
 #endif // ARBOL_H_INCLUDED
