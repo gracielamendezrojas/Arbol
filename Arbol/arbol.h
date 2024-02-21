@@ -138,6 +138,22 @@ int contarPiezas(Nodo *arbol) {
     }
 }
 
+int contarPiezasValidas(Nodo *arbol) {
+   if (arbol == nullptr) {
+        return 0;
+    }
+
+    if (arbol->temperatura < 30.8) {
+        return 1 + contarPiezasValidas(arbol->izq) + contarPiezasValidas(arbol->der);
+    } else {
+        return contarPiezasValidas(arbol->izq) + contarPiezasValidas(arbol->der);
+    }
+}
+
+int contarCajas(Nodo *arbol) {
+    return contarPiezasValidas(arbol) / 5;
+}
+
 
 //*******************************//
 //********ARBOL IMPREGNADO*******//
@@ -264,6 +280,22 @@ int contarPiezasImpregnado(NodoImpregnado *arbol) {
     }
 }
 
+int contarPiezasValidasImpregnado(NodoImpregnado *arbol) {
+   if (arbol == nullptr) {
+        return 0;
+    }
+
+    if (arbol->resistencia < 30.8) {
+        return 1 + contarPiezasValidasImpregnado(arbol->izq) + contarPiezasValidasImpregnado(arbol->der);
+    } else {
+        return contarPiezasValidasImpregnado(arbol->izq) + contarPiezasValidasImpregnado(arbol->der);
+    }
+}
+
+int contarCajasImpregnado(NodoImpregnado *arbol) {
+    return contarPiezasValidasImpregnado(arbol) / 5;
+}
+
 //********************//
 //*******MENUS********//
 //********************//
@@ -283,7 +315,8 @@ void menuCocido(){
         cout << "3. Buscar pieza por temperatura\n";
         cout << "4. Eliminar pieza por temperatura\n";
         cout << "5. Conteo de piezas\n";
-        cout << "6. Salir\n";
+        cout << "6. Conteo de cajas\n";
+        cout << "7. Salir\n";
         cout << "Digite la opción::\n";
         cin >> opcion;
 
@@ -356,6 +389,11 @@ void menuCocido(){
                 system("pause");
                 break;
             }
+            case 6 :
+            {
+                cout << "\nCantidad de cajas en proceso cocido: " << contarCajas(raizCocido) << endl;
+                break;
+            }
             default:
             {
             break;
@@ -363,7 +401,8 @@ void menuCocido(){
         }
     }while(opcion != 6);
 }
-    NodoImpregnado *raizImpregnado=nullptr;
+
+NodoImpregnado *raizImpregnado=nullptr;
 
 void menuImpregnado(){
     int opcion;
@@ -372,13 +411,14 @@ void menuImpregnado(){
     int contador=0;
     do{
 
-        cout << "\n Opciones del proceso cocido\n";
+        cout << "\n Opciones del proceso impregnado\n";
         cout << "1. Insertar pieza\n";
         cout << "2. Mostrar el árbol\n";
         cout << "3. Buscar pieza por resistencia\n";
         cout << "4. Eliminar pieza por resistencia\n";
         cout << "5. Conteo de piezas\n";
-        cout << "6. Salir\n";
+        cout << "6. Conteo de cajas\n";
+        cout << "7. Salir\n";
         cout << "Digite la opción::\n";
         cin >> opcion;
 
@@ -451,12 +491,17 @@ void menuImpregnado(){
                 system("pause");
                 break;
             }
+            case 6 :
+            {
+                cout << "Cantidad de cajas en proceso impregnado: " << contarCajasImpregnado(raizImpregnado) << endl;
+                break;
+            }
             default:
             {
-            break;
+                break;
             }
         }
-    }while(opcion != 6);
+    }while(opcion != 7);
 }
 
 void Menu() {
@@ -464,9 +509,11 @@ void Menu() {
 
     do {
         cout << "¿Qué proceso desea realizar?:" << endl;
-        cout << "1. cocido" << endl;
-        cout << "2. impregnado" << endl;
+        cout << "1. Cocido" << endl;
+        cout << "2. Impregnado" << endl;
         cout << "3. Mostrar total de piezas en ambos procesos" << endl;
+        cout << "4. Mostrar total de cajas producidas" << endl;
+        cout << "5. Salir" << endl;
         cout << "Digite una opción: " << endl;
         cin >> opcionInicial;
 
@@ -480,12 +527,25 @@ void Menu() {
                 break;
             }
             case 3: {
-                int totalPiezas = contarPiezas(raizCocido) + contarPiezasImpregnado(raizImpregnado);
+                int piezasCocido = contarPiezas(raizCocido);
+                int piezasImpregnado = contarPiezasImpregnado(raizImpregnado);
+                int totalPiezas = piezasCocido + piezasImpregnado;
+                cout << "Total de piezas en proceso cocido: " << piezasCocido << endl;
+                cout << "Total de piezas en proceso impregnado: " << piezasImpregnado << endl;
                 cout << "Total de piezas en ambos procesos: " << totalPiezas << endl;
                 break;
             }
+            case 4: {
+                int cajasCocido = contarCajas(raizCocido);
+                int cajasImpregnado = contarCajasImpregnado(raizImpregnado);
+                int totalCajas = cajasCocido + cajasImpregnado;
+                cout << "Total de cajas en proceso cocido: " << cajasCocido << endl;
+                cout << "Total de cajas en proceso impregnado: " << cajasImpregnado << endl;
+                cout << "Total de cajas producidas: " << totalCajas << endl;
+                break;
+            }
         }
-    } while (opcionInicial != 6);
+    } while (opcionInicial != 5);
 }
 
 #endif // ARBOL_H_INCLUDED
