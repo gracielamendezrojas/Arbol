@@ -1,11 +1,11 @@
 #ifndef ARBOL_H_INCLUDED
 #define ARBOL_H_INCLUDED
 
-#include <stdlib.h> 
-#include <iostream> 
+#include <stdlib.h>
+#include <iostream>
 #include <stdio.h>
 
-using namespace std; 
+using namespace std;
 
 //***************************//
 //********ARBOL COCIDO*******//
@@ -58,9 +58,9 @@ void mostrarArbol(Nodo *arbol, int cont){
     }else{
         mostrarArbol(arbol->der, cont+1);
         for(int i=0; i< cont; i++){
-                cout<<"  ";       
+                cout<<"  ";
         }
-        cout<< arbol-> temperatura <<endl; 
+        cout<< arbol-> temperatura <<endl;
 
         mostrarArbol(arbol->izq, cont+1);
     }
@@ -94,9 +94,9 @@ Nodo* search_return_node_tree(Nodo *arbol, double ptemperatura){
 
 Nodo* find_smallest(Nodo* arbol){
     if(arbol->izq){
-        return find_smallest(arbol->izq); 
+        return find_smallest(arbol->izq);
     }
-    return arbol; 
+    return arbol;
 }
 
 
@@ -129,6 +129,31 @@ Nodo* delete_node(Nodo*& arbol, double temperatura){
     }
     return arbol;
 }
+
+int contarPiezas(Nodo *arbol) {
+    if (arbol == nullptr) {
+        return 0;
+    } else {
+        return 1 + contarPiezas(arbol->izq) + contarPiezas(arbol->der);
+    }
+}
+
+int contarPiezasValidas(Nodo *arbol) {
+   if (arbol == nullptr) {
+        return 0;
+    }
+
+    if (arbol->temperatura < 30.8) {
+        return 1 + contarPiezasValidas(arbol->izq) + contarPiezasValidas(arbol->der);
+    } else {
+        return contarPiezasValidas(arbol->izq) + contarPiezasValidas(arbol->der);
+    }
+}
+
+int contarCajas(Nodo *arbol) {
+    return contarPiezasValidas(arbol) / 5;
+}
+
 
 //*******************************//
 //********ARBOL IMPREGNADO*******//
@@ -178,9 +203,9 @@ void mostrarArbolImpregnado(NodoImpregnado *arbol, int cont){
     }else{
         mostrarArbolImpregnado(arbol->der, cont+1);
         for(int i=0; i< cont; i++){
-                cout<<"  ";       
+                cout<<"  ";
         }
-        cout<< arbol-> resistencia <<endl; 
+        cout<< arbol-> resistencia <<endl;
 
         mostrarArbolImpregnado(arbol->izq, cont+1);
     }
@@ -212,9 +237,9 @@ NodoImpregnado* search_return_node_treeImpregnado(NodoImpregnado *arbol, double 
 
 NodoImpregnado* find_smallestImpregnado(NodoImpregnado* arbol){
     if(arbol->izq){
-        return find_smallestImpregnado(arbol->izq); 
+        return find_smallestImpregnado(arbol->izq);
     }
-    return arbol; 
+    return arbol;
 }
 
 NodoImpregnado* delete_nodeImpregnado(NodoImpregnado*& arbol, double resistencia){
@@ -247,16 +272,41 @@ NodoImpregnado* delete_nodeImpregnado(NodoImpregnado*& arbol, double resistencia
     return arbol;
 }
 
+int contarPiezasImpregnado(NodoImpregnado *arbol) {
+    if (arbol == nullptr) {
+        return 0;
+    } else {
+        return 1 + contarPiezasImpregnado(arbol->izq) + contarPiezasImpregnado(arbol->der);
+    }
+}
+
+int contarPiezasValidasImpregnado(NodoImpregnado *arbol) {
+   if (arbol == nullptr) {
+        return 0;
+    }
+
+    if (arbol->resistencia < 30.8) {
+        return 1 + contarPiezasValidasImpregnado(arbol->izq) + contarPiezasValidasImpregnado(arbol->der);
+    } else {
+        return contarPiezasValidasImpregnado(arbol->izq) + contarPiezasValidasImpregnado(arbol->der);
+    }
+}
+
+int contarCajasImpregnado(NodoImpregnado *arbol) {
+    return contarPiezasValidasImpregnado(arbol) / 5;
+}
+
 //********************//
 //*******MENUS********//
-//********************// 
+//********************//
+Nodo *raizCocido=nullptr;
+
 
 void menuCocido(){
-    int opcion; 
+    int opcion;
     char tipoPieza;
     double temperatura, humedad, presion;
     int contador=0;
-    Nodo *raizCocido=nullptr;
     do{
 
         cout << "\n Opciones del proceso cocido\n";
@@ -265,7 +315,8 @@ void menuCocido(){
         cout << "3. Buscar pieza por temperatura\n";
         cout << "4. Eliminar pieza por temperatura\n";
         cout << "5. Conteo de piezas\n";
-        cout << "6. Salir\n";
+        cout << "6. Conteo de cajas\n";
+        cout << "7. Salir\n";
         cout << "Digite la opción::\n";
         cin >> opcion;
 
@@ -296,22 +347,22 @@ void menuCocido(){
                 mostrarArbol(raizCocido, contador);
                 cout << "\n";
                 system("pause");
-                break; 
-            }  
+                break;
+            }
             case 3:
             {
                 cout << "\n Ingresa la temperatura de la pieza para buscarla:: \n";
                 cin >> temperatura;
-                Nodo *nodoBuscado= new Nodo(); 
-                nodoBuscado= search_return_node_tree(raizCocido, temperatura); 
+                Nodo *nodoBuscado= new Nodo();
+                nodoBuscado= search_return_node_tree(raizCocido, temperatura);
 
                 cout << "\n Buscando pieza.... \n";
-        
+
                 if (nodoBuscado == NULL) {
                     cout << "\n No se encontró la pieza.\n";
                 }
                 else {
-                    cout <<"La pieza encontrada tiene los siguientes datos: "<<endl; 
+                    cout <<"La pieza encontrada tiene los siguientes datos: "<<endl;
                     cout <<"-Temperatura:: " <<nodoBuscado->temperatura <<endl;
                     cout <<"-Presión:: " <<nodoBuscado->presion <<endl;
                     cout <<"-Humedad:: " <<nodoBuscado->humedad <<endl;
@@ -324,7 +375,7 @@ void menuCocido(){
                 cout << "\n Ingrese la temperatura de la pieza a eliminar::\n";
                 cin >> temperatura ;
                 raizCocido = delete_node(raizCocido, temperatura);
-                
+
                 cout << "\n Así se ve el árbol actualmente...\n" << endl;
                 cout << "\n";
                 mostrarArbol(raizCocido, contador);
@@ -332,30 +383,42 @@ void menuCocido(){
                 system("pause");
                 break;
             }
-
+            case 5 :
+            {
+                cout << "\nCantidad de piezas en proceso cocido: " << contarPiezas(raizCocido) << endl;
+                system("pause");
+                break;
+            }
+            case 6 :
+            {
+                cout << "\nCantidad de cajas en proceso cocido: " << contarCajas(raizCocido) << endl;
+                break;
+            }
             default:
             {
             break;
             }
-        }    
-    }while(opcion != 6); 
+        }
+    }while(opcion != 6);
 }
 
+NodoImpregnado *raizImpregnado=nullptr;
+
 void menuImpregnado(){
-    int opcion; 
+    int opcion;
     char tipoSensor;
     double resistencia, voltaje, campoMagnetico;
     int contador=0;
-    NodoImpregnado *raizImpregnado=nullptr;
     do{
 
-        cout << "\n Opciones del proceso cocido\n";
+        cout << "\n Opciones del proceso impregnado\n";
         cout << "1. Insertar pieza\n";
         cout << "2. Mostrar el árbol\n";
         cout << "3. Buscar pieza por resistencia\n";
         cout << "4. Eliminar pieza por resistencia\n";
         cout << "5. Conteo de piezas\n";
-        cout << "6. Salir\n";
+        cout << "6. Conteo de cajas\n";
+        cout << "7. Salir\n";
         cout << "Digite la opción::\n";
         cin >> opcion;
 
@@ -386,22 +449,22 @@ void menuImpregnado(){
                 mostrarArbolImpregnado(raizImpregnado, contador);
                 cout << "\n";
                 system("pause");
-                break; 
-            }  
+                break;
+            }
             case 3:
             {
                 cout << "\n Ingresa la resistencia de la pieza para buscarla:: \n";
                 cin >> resistencia;
-                NodoImpregnado *nodoImpregnadoBuscado= new NodoImpregnado(); 
-                nodoImpregnadoBuscado= search_return_node_treeImpregnado(raizImpregnado, resistencia); 
+                NodoImpregnado *nodoImpregnadoBuscado= new NodoImpregnado();
+                nodoImpregnadoBuscado= search_return_node_treeImpregnado(raizImpregnado, resistencia);
 
                 cout << "\n Buscando pieza.... \n";
-        
+
                 if (nodoImpregnadoBuscado == NULL) {
                     cout << "\n No se encontró la pieza.\n";
                 }
                 else {
-                    cout <<"La pieza encontrada tiene los siguientes datos: "<<endl; 
+                    cout <<"La pieza encontrada tiene los siguientes datos: "<<endl;
                     cout <<"-Resistencia:: " <<nodoImpregnadoBuscado->resistencia <<endl;
                     cout <<"-Voltaje:: " <<nodoImpregnadoBuscado->voltaje <<endl;
                     cout <<"-Campo magnetico:: " <<nodoImpregnadoBuscado->campoMagnetico <<endl;
@@ -414,7 +477,7 @@ void menuImpregnado(){
                 cout << "\n Ingrese la resistencia de la pieza a eliminar::\n";
                 cin >> resistencia ;
                 raizImpregnado = delete_nodeImpregnado(raizImpregnado, resistencia);
-                
+
                 cout << "\n Así se ve el árbol actualmente...\n" << endl;
                 cout << "\n";
                 mostrarArbolImpregnado(raizImpregnado, contador);
@@ -422,35 +485,67 @@ void menuImpregnado(){
                 system("pause");
                 break;
             }
-
+            case 5 :
+            {
+                cout << "Cantidad de piezas en proceso impregnado: " << contarPiezasImpregnado(raizImpregnado) << endl;
+                system("pause");
+                break;
+            }
+            case 6 :
+            {
+                cout << "Cantidad de cajas en proceso impregnado: " << contarCajasImpregnado(raizImpregnado) << endl;
+                break;
+            }
             default:
             {
-            break;
+                break;
             }
-        }    
-    }while(opcion != 6); 
-}   
+        }
+    }while(opcion != 7);
+}
 
 void Menu() {
-
     int opcionInicial;
 
-    do{
-        cout << "¿Qué proceso desea realizar?:" <<endl;
-        cout << "1. cocido" <<endl;
-        cout << "2. impregnado" <<endl;
-        cout << "Digite una opción: " <<endl;
+    do {
+        cout << "¿Qué proceso desea realizar?:" << endl;
+        cout << "1. Cocido" << endl;
+        cout << "2. Impregnado" << endl;
+        cout << "3. Mostrar total de piezas en ambos procesos" << endl;
+        cout << "4. Mostrar total de cajas producidas" << endl;
+        cout << "5. Salir" << endl;
+        cout << "Digite una opción: " << endl;
         cin >> opcionInicial;
-        switch (opcionInicial)
-        {
-            case 1:
-                menuCocido(); 
-                break; 
-            case 2 :
-                menuImpregnado(); 
+
+        switch (opcionInicial) {
+            case 1: {
+                menuCocido();
                 break;
-        } 
-    }while(opcionInicial != 6);
+            }
+            case 2: {
+                menuImpregnado();
+                break;
+            }
+            case 3: {
+                int piezasCocido = contarPiezas(raizCocido);
+                int piezasImpregnado = contarPiezasImpregnado(raizImpregnado);
+                int totalPiezas = piezasCocido + piezasImpregnado;
+                cout << "Total de piezas en proceso cocido: " << piezasCocido << endl;
+                cout << "Total de piezas en proceso impregnado: " << piezasImpregnado << endl;
+                cout << "Total de piezas en ambos procesos: " << totalPiezas << endl;
+                break;
+            }
+            case 4: {
+                int cajasCocido = contarCajas(raizCocido);
+                int cajasImpregnado = contarCajasImpregnado(raizImpregnado);
+                int totalCajas = cajasCocido + cajasImpregnado;
+                cout << "Total de cajas en proceso cocido: " << cajasCocido << endl;
+                cout << "Total de cajas en proceso impregnado: " << cajasImpregnado << endl;
+                cout << "Total de cajas producidas: " << totalCajas << endl;
+                break;
+            }
+        }
+    } while (opcionInicial != 5);
 }
 
 #endif // ARBOL_H_INCLUDED
